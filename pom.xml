@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.dremio.plugin</groupId>
+  <!--[Dremio version]-[plugin version]-->
+  <version>20.0.0-0.0.1</version>
+  <artifactId>dremio-singlestore-plugin</artifactId>
+  <name>Dremio SingleStore ARP Connector</name>
+
+  <properties>
+    <version.dremio>20.0.0-202201050826310141-8cc7162b</version.dremio>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dremio.community.plugins</groupId>
+      <artifactId>dremio-ce-jdbc-plugin</artifactId>
+      <version>${version.dremio}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <configLocation>src/main/checkstyle/checkstyle-config.xml</configLocation>
+          <suppressionsLocation>src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>dremio-public</id>
+      <url>http://maven.dremio.com/public/</url>
+    </repository>
+    <repository>
+      <id>dremio-free</id>
+      <url>http://maven.dremio.com/free/</url>
+    </repository>    
+  </repositories>
+</project>

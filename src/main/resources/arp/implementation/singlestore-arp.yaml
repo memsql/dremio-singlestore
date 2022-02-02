@@ -1,0 +1,1001 @@
+#
+# Copyright (C) 2017-2018 Dremio Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metadata:
+  # Manually Configured Metadata Section.
+  name: SINGLESTOREARP
+  apiname: singlestore
+  spec_version: '2'
+
+syntax:
+  # Manually Configured Syntax Section.
+  identifier_quote: '`'
+  identifier_length_limit: 128
+  allows_boolean_literal: true
+  map_boolean_literal_to_bit: false
+  supports_catalogs: false
+  supports_schemas: false
+
+data_types:
+  mappings:
+  # Manually Configured Data Types Mappings Section.
+
+  #-------Numeric Types--------#
+  - source:
+      name: "BOOLEAN"
+    dremio:
+      name: "BOOLEAN"
+    required_cast_arguments: "none"
+  - source:
+      name: "INT"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "INTEGER"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "BIT"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "SMALLINT"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "TINYINT"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "MEDIUMINT"
+    dremio:
+      name: "INTEGER"
+    required_cast_arguments: "none"
+  - source:
+      name: "BIGINT"
+    dremio:
+      name: "BIGINT"
+    required_cast_arguments: "none"
+  - source:
+      name: "DECIMAL"
+    dremio:
+      name: "DOUBLE"
+    required_cast_arguments: "none"
+  - source:
+      name: "FLOAT"
+    dremio:
+      name: "DOUBLE"
+    required_cast_arguments: "none"
+  - source:
+      name: "DOUBLE"
+    dremio:
+      name: "DOUBLE"
+    required_cast_arguments: "none"
+
+
+  #-------Date Types--------#
+  - source:
+      name: "TIMESTAMP"
+    dremio:
+      name: "TIMESTAMP"
+  - source:
+      name: "TIME"
+    dremio:
+      name: "TIME"
+    required_cast_arguments: "none"
+  - source:
+      name: "DATETIME"
+    dremio:
+      name: "TIMESTAMP"
+  - source:
+      name: "DATE"
+    dremio:
+      name: "DATE"
+    required_cast_arguments: "none"
+
+  #-------String Types--------#
+  - source:
+      name: "VARCHAR"
+    dremio:
+      name: "VARCHAR"
+    required_cast_arguments: "none"
+  - source:
+      name: "TEXT"
+    dremio:
+      name: "VARCHAR"
+    required_cast_arguments: "none"
+  - source:
+      name: "CHAR"
+    dremio:
+      name: "VARCHAR"
+    required_cast_arguments: "none"
+  - source:
+      name: "LONGTEXT"
+    dremio:
+      name: "VARCHAR"
+    required_cast_arguments: "none"
+  - source:
+      name: "BINARY"
+    dremio:
+      name: "VARBINARY"
+    required_cast_arguments: "none"
+
+relational_algebra:
+  aggregation:
+    enable: true
+    group_by_ordinal: true
+    distinct: true
+    count_functions:
+      count_star:
+        enable: true
+      count:
+        enable: true
+      count_distinct:
+        enable: true
+    functions:
+      - names:
+          - "AVG"
+        signatures:
+          - args:
+              - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+              - "INTEGER"
+            return: "DOUBLE"
+          - args:
+              - "BIGINT"
+            return: "DOUBLE"
+      - names:
+          - "COUNT"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "INTEGER"
+          - args:
+            - "DOUBLE"
+            return: "INTEGER"
+          - args:
+            - "BIGINT"
+            return: "INTEGER"
+          - args:
+            - "VARCHAR"
+            return: "INTEGER"
+          - args:
+            - "VARBINARY"
+            return: "INTEGER"
+          - args:
+            - "TIME"
+            return: "INTEGER"
+          - args:
+            - "TIMESTAMP"
+            return: "INTEGER"
+          - args:
+            - "DATE"
+            return: "INTEGER"
+          - args:
+            - "BOOLEAN"
+            return: "INTEGER"
+      - names:
+          - "MAX"
+          - "MIN"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "INTEGER"
+          - args:
+            - "DOUBLE"
+            return: "INTEGER"
+          - args:
+            - "BIGINT"
+            return: "INTEGER"
+          - args:
+            - "VARCHAR"
+            return: "INTEGER"
+          - args:
+            - "VARBINARY"
+            return: "INTEGER"
+          - args:
+            - "TIME"
+            return: "INTEGER"
+          - args:
+            - "TIMESTAMP"
+            return: "INTEGER"
+          - args:
+            - "DATE"
+            return: "INTEGER"
+          - args:
+            - "BOOLEAN"
+            return: "INTEGER"
+      - names:
+          - "STDDEV_POP"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+          - args:
+            - "VARCHAR"
+            return: "DOUBLE"
+          - args:
+            - "VARBINARY"
+            return: "DOUBLE"
+          - args:
+            - "TIME"
+            return: "DOUBLE"
+          - args:
+            - "TIMESTAMP"
+            return: "DOUBLE"
+          - args:
+            - "DATE"
+            return: "DOUBLE"
+          - args:
+            - "BOOLEAN"
+            return: "DOUBLE"
+      - names:
+          - "STDDEV"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+          - args:
+            - "VARCHAR"
+            return: "DOUBLE"
+          - args:
+            - "VARBINARY"
+            return: "DOUBLE"
+          - args:
+            - "TIME"
+            return: "DOUBLE"
+          - args:
+            - "TIMESTAMP"
+            return: "DOUBLE"
+          - args:
+            - "DATE"
+            return: "DOUBLE"
+          - args:
+            - "BOOLEAN"
+            return: "DOUBLE"
+      - names:
+          - "STDDEV_SAMP"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+          - args:
+            - "VARCHAR"
+            return: "DOUBLE"
+          - args:
+            - "VARBINARY"
+            return: "DOUBLE"
+          - args:
+            - "TIME"
+            return: "DOUBLE"
+          - args:
+            - "TIMESTAMP"
+            return: "DOUBLE"
+          - args:
+            - "DATE"
+            return: "DOUBLE"
+          - args:
+            - "BOOLEAN"
+            return: "DOUBLE"
+      - names:
+          - "SUM"
+        signatures:
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+      - names:
+          - "VARIANCE"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+          - args:
+            - "VARCHAR"
+            return: "DOUBLE"
+          - args:
+            - "VARBINARY"
+            return: "DOUBLE"
+          - args:
+            - "TIME"
+            return: "DOUBLE"
+          - args:
+            - "TIMESTAMP"
+            return: "DOUBLE"
+          - args:
+            - "DATE"
+            return: "DOUBLE"
+          - args:
+            - "BOOLEAN"
+            return: "DOUBLE"
+      - names:
+          - "VAR_SAMP"
+        signatures:
+          - args:
+            - "INTEGER"
+            return: "DOUBLE"
+          - args:
+            - "DOUBLE"
+            return: "DOUBLE"
+          - args:
+            - "BIGINT"
+            return: "DOUBLE"
+          - args:
+            - "VARCHAR"
+            return: "DOUBLE"
+          - args:
+            - "VARBINARY"
+            return: "DOUBLE"
+          - args:
+            - "TIME"
+            return: "DOUBLE"
+          - args:
+            - "TIMESTAMP"
+            return: "DOUBLE"
+          - args:
+            - "DATE"
+            return: "DOUBLE"
+          - args:
+            - "BOOLEAN"
+            return: "DOUBLE"
+  project:
+    enable: true
+  join:
+    enable: true
+    cross:
+      enable: true
+    inner:
+      enable: true
+      inequality: true
+    left:
+      enable: true
+      inequality: true
+    right:
+      enable: true
+      inequality: false
+    full:
+      enable: true
+      inequality: false
+  sort:
+    enable: true
+    order_by:
+      enable: true
+      default_nulls_ordering: high
+    fetch_offset:
+      offset_fetch:
+        enable: true
+        format: 'LIMIT {1} OFFSET {0}'
+      offset_only:
+        enable: false
+      fetch_only:
+        enable: true
+        format: 'LIMIT {0}'
+  union:
+    enable: true
+  union_all:
+    enable: true
+  values:
+    enable: false
+    method: values
+
+# Describe the set of function signatures that are internally supported.
+expressions:
+  subqueries:
+    correlated: true
+    scalar: true
+    in_clause: true
+  supports_case: true
+  supports_over: false
+  operators:
+    - names:
+        - "="
+        - "!="
+        - "<>"
+        - ">"
+        - ">="
+        - "<"
+        - "<="
+      signatures:
+        - args:
+          - "DOUBLE"
+          - "DOUBLE"
+          return: "BOOLEAN"
+        - args:
+          - "DOUBLE"
+          - "INTEGER"
+          return: "BOOLEAN"
+        - args:
+          - "DOUBLE"
+          - "varchar"
+          return: "BOOLEAN"
+        - args:
+          - "INTEGER"
+          - "DOUBLE"
+          return: "BOOLEAN"
+        - args:
+          - "INTEGER"
+          - "INTEGER"
+          return: "BOOLEAN"
+        - args:
+          - "INTEGER"
+          - "varchar"
+          return: "BOOLEAN"
+        - args:
+          - "varchar"
+          - "varchar"
+          return: "BOOLEAN"
+    - names:
+        - "not"
+      signatures:
+        - args:
+          - "BOOLEAN"
+          return: "BOOLEAN"
+    # Date and Time Functions
+    - names:
+        - "CURRENT_DATE"
+      signatures:
+      - args: []
+        return: "DATE"
+    - names:
+        - "CURRENT_TIMESTAMP"
+      signatures:
+        - args: []
+          return: "TIMESTAMP"
+    - names:
+        - "CURRENT_TIME"
+      signatures:
+        - args: []
+          return: "TIME"
+    - names:
+        - "DATE_ADD"
+      signatures:
+        - args:
+          - "DATE"
+          - "INTEGER"
+          return: "DATE"
+        - args:
+          - "TIMESTAMP"
+          - "INTEGER"
+          return: "TIMESTAMP"
+        - args:
+          - "TIME"
+          - "INTEGER"
+          return: "TIME"
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          return: "DATE"
+    - names:
+        - "DATE_SUB"
+      signatures:
+        - args:
+          - "DATE"
+          - "INTEGER"
+          return: "DATE"
+        - args:
+          - "TIMESTAMP"
+          - "INTEGER"
+          return: "TIMESTAMP"
+        - args:
+          - "TIME"
+          - "INTEGER"
+          return: "TIME"
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          return: "DATE"
+    - names:
+        - "DATE_TRUNC"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "DATE"
+          return: "TIMESTAMP"
+        - args:
+          - "VARCHAR"
+          - "TIMESTAMP"
+          return: "TIMESTAMP"
+        - args:
+          - "VARCHAR"
+          - "TIME"
+          return: "TIMESTAMP"
+    - names:
+        - "EXTRACT"
+      signatures:
+        - args:
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+    - names:
+        - "FROM_UNIXTIME"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "TIME"
+    - names:
+        - "HOUR"
+      signatures:
+        - args:
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+    - names:
+        - "LAST_DAY"
+      signatures:
+        - args:
+          - "TIME"
+          return: "DATE"
+        - args:
+          - "DATE"
+          return: "DATE"
+        - args:
+          - "TIMESTAMP"
+          return: "DATE"
+        - args:
+          - "VARCHAR"
+          return: "DATE"
+    - names:
+        - "LOCALTIMESTAMP"
+      signatures:
+        - args: []
+          return: "TIMESTAMP"
+        - args: []
+          return: "TIME"
+    - names:
+        - "MINUTE"
+      signatures:
+        - args:
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+    - names:
+        - "MONTH"
+      signatures:
+        - args:
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+    - names:
+        - "MONTHS_BETWEEN"
+      signatures:
+        - args:
+          - "DATE"
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "DATE"
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "TIME"
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "DATE"
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          - "DATE"
+          return: "INTEGER"
+        - args:
+          - "TIME"
+          - "TIME"
+          return: "INTEGER"
+        - args:
+          - "TIME"
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          - "TIMESTAMP"
+          return: "INTEGER"
+        - args:
+          - "TIMESTAMP"
+          - "TIME"
+          return: "INTEGER"
+    - names:
+        - "TIMESTAMPDIFF"
+      signatures:
+        - args:
+          - "DATE"
+          - "DATE"
+          return: "TIME"
+        - args:
+          - "TIMESTAMP"
+          - "TIMESTAMP"
+          return: "TIME"
+    - names:
+        - "TIMESTAMPADD"
+      signatures:
+        - args:
+          - "INTEGER"
+          - "DATE"
+          return: "TIME"
+        - args:
+          - "INTEGER"
+          - "TIMESTAMP"
+          return: "TIME"
+    - names:
+        - "UNIX_TIMESTAMP"
+      signatures:
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+        - args: []
+          return: "INTEGER"
+    #   String Functions
+    - names:
+        - "CONCAT"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "VARCHAR"
+          return: "VARCHAR"
+    - names:
+        - "LEFT"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          return: "VARCHAR"
+    - names:
+        - "LENGTH"
+      signatures:
+        - args:
+          - "VARCHAR"
+          return: "INTEGER"
+    - names:
+        - "LPAD"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          - "VARCHAR"
+          return: "VARCHAR"
+    - names:
+        - "LTRIM"
+      signatures:
+        - args:
+          - "VARCHAR"
+          return: "VARCHAR"
+    - names:
+        - "RPAD"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          - "VARCHAR"
+          return: "VARCHAR"
+    - names:
+        - "RTRIM"
+      signatures:
+        - args:
+          - "VARCHAR"
+          return: "VARCHAR"
+    - names:
+        - "RIGHT"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          return: "VARCHAR"
+    - names:
+        - "SUBSTRING"
+      signatures:
+        - args:
+          - "VARCHAR"
+          - "INTEGER"
+          - "INTEGER"
+          return: "VARCHAR"
+          rewrite: "SUBSTR({3})"
+    - names:
+        - "HEX"
+      signatures:
+        - args:
+          - "VARBINARY"
+          return: "VARCHAR"
+          rewrite: "TO_HEX({0}, {1})"
+        # Numeric Functions
+    - names:
+        - "ABS"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "INTEGER"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "SIGN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "INTEGER"
+        - args:
+          - "DOUBLE"
+          return: "INTEGER"
+    - names:
+        - "EXP"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "ACOS"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "ASIN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "ATAN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "CEILING"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "INTEGER"
+        - args:
+          - "DOUBLE"
+          return: "INTEGER"
+    - names:
+        - "COS"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "COT"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "LN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+          rewrite: "LOG({0}, {1})"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+          rewrite: "LOG({1})"
+    - names:
+        - "LOG10"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "DEGREES"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "FLOOR"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "INTEGER"
+        - args:
+          - "DOUBLE"
+          return: "INTEGER"
+    - names:
+        - "LOG"
+      signatures:
+        - args:
+          - "INTEGER"
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          - "DOUBLE"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "INTEGER"
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "POW"
+      signatures:
+        - args:
+          - "INTEGER"
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          - "DOUBLE"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "INTEGER"
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "PI"
+      signatures:
+        - args: []
+          return: "DOUBLE"
+    - names:
+        - "RADIANS"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "RAND"
+      signatures:
+        - args: []
+          return: "DOUBLE"
+          rewrite: "RANDOM({0})"
+    - names:
+        - "SIN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "TAN"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "SQRT"
+      signatures:
+        - args:
+          - "INTEGER"
+          return: "DOUBLE"
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+    - names:
+        - "TRUNCATE"
+      signatures:
+        - args:
+          - "DOUBLE"
+          return: "DOUBLE"
+
+  variable_length_operators:
+    - names:
+        - and
+      variable_signatures:
+        - return: BOOLEAN
+          arg_type: BOOLEAN
+    - names:
+        - or
+      variable_signatures:
+        - return: BOOLEAN
+          arg_type: BOOLEAN
