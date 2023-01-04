@@ -16,7 +16,7 @@
  */
 package com.dremio.exec.store.jdbc.conf;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.dremio.exec.catalog.conf.Property;
 
 import com.dremio.options.OptionManager;
 import com.dremio.security.CredentialsService;
@@ -32,6 +32,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import io.protostuff.Tag;
 
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -48,12 +49,11 @@ public class SingleStoreConf extends AbstractArpConf<SingleStoreConf> {
   @NotBlank
   @Tag(1)
   @DisplayMetadata(label = "Host")
-  public String host = "localhost";
+  public String host;
 
-  @NotBlank
   @Tag(2)
   @DisplayMetadata(label = "Port")
-  public String port = "3306";
+  public int port = 3306;
   
   @NotBlank
   @Tag(3)
@@ -63,7 +63,7 @@ public class SingleStoreConf extends AbstractArpConf<SingleStoreConf> {
   @NotBlank
   @Tag(4)
   @DisplayMetadata(label = "Username")
-  public String user = "root";
+  public String user;
 
   @NotBlank
   @Tag(5)
@@ -72,30 +72,55 @@ public class SingleStoreConf extends AbstractArpConf<SingleStoreConf> {
   public String password;
 
   @Tag(6)
+  @DisplayMetadata(label = "Use SSL")
+  public boolean useSsl;
+
+  @Tag(7)
+  @DisplayMetadata(label = "Server Certificate")
+  public String serverSslCert;
+
+  @Tag(8)
   @DisplayMetadata(label = "Record fetch size")
   @NotMetadataImpacting
   public int fetchSize = 200;
 
-  @Tag(7)
+  @Tag(9)
   @DisplayMetadata(label = "Maximum idle connections")
   @NotMetadataImpacting
   public int maxIdleConns = 8;
 
-  @Tag(8)
+  @Tag(10)
   @DisplayMetadata(label = "Connection idle time (s)")
   @NotMetadataImpacting
   public int idleTimeSec = 60;
 
+  @Tag(11)
+  public List<Property> propertyList;
+
   @VisibleForTesting
   public String toJdbcConnectionString() {
-    checkNotNull(user, "Missing username!");
     String url =  String.format("jdbc:singlestore://%s:%s", host, port);
+    boolean userProvided = false;
     if (database != null && !database.equals("")) {
       url += String.format("/%s", database);
     }
-    url += String.format("?user=%s", user);
+    if (user != null && !user.equals("")) {
+      url += String.format("?user=%s", user);
+      userProvided = true;
+    }
     if (password != null && !password.equals("")) {
-      url += String.format("&password=%s", password);
+      url += String.format("%spassword=%s", userProvided ? "&" : "?", password);
+    }
+    if (useSsl) {
+      url += "&useSsl=true";
+    }
+    if (serverSslCert != null && !serverSslCert.equals("")) {
+      url += String.format("&serverSslCert=%s", serverSslCert);
+    }
+    if (this.propertyList != null) {
+      for (Property p : this.propertyList) {
+        url += String.format("&%s=%s", p.name, p.value);
+      }
     }
 
     return url;
