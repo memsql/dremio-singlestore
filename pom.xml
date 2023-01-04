@@ -6,7 +6,7 @@
 
   <groupId>com.dremio.plugin</groupId>
   <!--[Dremio version]-[plugin version]-->
-  <version>23.1.0-0.0.1</version>
+  <version>23.1.0-1.0.0</version>
   <artifactId>dremio-singlestore-plugin</artifactId>
   <name>Dremio SingleStore ARP Connector</name>
 
