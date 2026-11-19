@@ -102,7 +102,9 @@ jobs:
             exit 1
           fi
           # setup-java installs the JDK as root; the runner user cannot write cacerts.
-          sudo keytool -importcert -noprompt \
+          # Call keytool via $JAVA_HOME (expanded before sudo) so the cert lands in the
+          # setup-java JDK's cacerts; sudo's secure_path would pick the image default JDK.
+          sudo "$JAVA_HOME/bin/keytool" -importcert -noprompt \
             -alias microsoft-identity-verification-root-ca-2020 \
             -cacerts \
             -storepass changeit \
