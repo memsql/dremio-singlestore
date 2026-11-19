@@ -1,0 +1,123 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Check tag matches pom.xml version
+        run: |
+          RELEASE_VERSION="${GITHUB_REF_NAME#v}"
+          POM_VERSION=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          if [[ "$RELEASE_VERSION" != "$POM_VERSION" ]]; then
+            echo "Tag $GITHUB_REF_NAME does not match pom.xml version $POM_VERSION (expected tag v$POM_VERSION)" >&2
+            exit 1
+          fi
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "JAR=target/dremio-singlestore-plugin-$RELEASE_VERSION.jar" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: mvn -B clean package -DskipTests
+
+      # Signing is optional: it runs only when the Azure Artifact Signing secrets
+      # and variables are configured for the repository (see RELEASING.md).
+      - name: Check signing configuration
+        id: signing
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_SIGNING_ENDPOINT: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_ACCOUNT: ${{ vars.AZURE_SIGNING_ACCOUNT }}
+          AZURE_SIGNING_PROFILE: ${{ vars.AZURE_SIGNING_PROFILE }}
+        run: |
+          if [[ -n "$AZURE_CLIENT_ID" && -n "$AZURE_TENANT_ID" && -n "$AZURE_SUBSCRIPTION_ID" && \
+                -n "$AZURE_SIGNING_ENDPOINT" && -n "$AZURE_SIGNING_ACCOUNT" && -n "$AZURE_SIGNING_PROFILE" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Azure Artifact Signing is not configured; the release JAR will NOT be signed."
+          fi
+
+      - name: Install Jsign
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          wget -q https://github.com/ebourg/jsign/releases/download/7.0/jsign_7.0_all.deb
+          sudo dpkg -i jsign_7.0_all.deb
+
+      - name: Azure Login
+        if: steps.signing.outputs.enabled == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign JAR with Jsign
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          AZURE_ACCESS_TOKEN=$(az account get-access-token --resource https://codesigning.azure.net --query accessToken -o tsv)
+          JSIGN_JAR=/usr/share/jsign/jsign-7.0.jar
+          ENDPOINT="${{ vars.AZURE_SIGNING_ENDPOINT }}"
+          ALIAS="${{ vars.AZURE_SIGNING_ACCOUNT }}/${{ vars.AZURE_SIGNING_PROFILE }}"
+          jarsigner \
+            -J-cp -J"$JSIGN_JAR" -J--add-modules -Jjava.sql \
+            -providerClass net.jsign.jca.JsignJcaProvider \
+            -providerArg "$ENDPOINT" \
+            -keystore NONE \
+            -storetype TRUSTEDSIGNING \
+            -storepass "$AZURE_ACCESS_TOKEN" \
+            -tsa "http://timestamp.acs.microsoft.com" \
+            "$JAR" "$ALIAS"
+
+      # The Trusted Signing root is not shipped in the JDK truststore, so without
+      # it jarsigner reports the signer and timestamp chains as unverifiable.
+      - name: Trust the Azure Trusted Signing root CA
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          EXPECTED_SHA256="53:67:F2:0C:7A:DE:0E:2B:CA:79:09:15:05:6D:08:6B:72:0C:33:C1:FA:2A:26:61:AC:F7:87:E3:29:2E:12:70"
+          curl -fsSL -o msroot2020.crt \
+            "https://www.microsoft.com/pkiops/certs/Microsoft%20Identity%20Verification%20Root%20Certificate%20Authority%202020.crt"
+          ACTUAL_SHA256=$(openssl x509 -inform DER -in msroot2020.crt -noout -fingerprint -sha256 | cut -d= -f2)
+          if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
+            echo "Unexpected root CA fingerprint: $ACTUAL_SHA256" >&2
+            exit 1
+          fi
+          # setup-java installs the JDK as root; the runner user cannot write cacerts.
+          sudo keytool -importcert -noprompt \
+            -alias microsoft-identity-verification-root-ca-2020 \
+            -cacerts \
+            -storepass changeit \
+            -file msroot2020.crt
+
+      - name: Verify signed JAR
+        if: steps.signing.outputs.enabled == 'true'
+        run: jarsigner -verify -strict "$JAR"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Dremio SingleStore ARP Connector ${{ env.RELEASE_VERSION }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: ${{ env.JAR }}
