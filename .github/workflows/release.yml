@@ -102,7 +102,9 @@ jobs:
             exit 1
           fi
           # setup-java installs the JDK as root; the runner user cannot write cacerts.
-          sudo keytool -importcert -noprompt \
+          # Use $JAVA_HOME/bin/keytool (expanded before sudo) so we update Temurin 11's
+          # cacerts — sudo's secure_path would otherwise pick the image default keytool.
+          sudo "$JAVA_HOME/bin/keytool" -importcert -noprompt \
             -alias microsoft-identity-verification-root-ca-2020 \
             -cacerts \
             -storepass changeit \
