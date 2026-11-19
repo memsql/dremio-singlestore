@@ -1,5 +1,8 @@
 # Dremio SingleStore ARP Connector
 
+> [!NOTE]
+> **Attention:** The code in this repository is intended for experimental use only and is not fully tested, documented, or supported by SingleStore. Visit the [SingleStore Forums](https://www.singlestore.com/forum/) to ask questions about this repository.
+
 The SingleStore connector allows Dremio to connect to and query data in a SingleStore database. This can then allow you to build custom reports, dashboards, or even just ad-hoc SQL via your client tool of choice.
 
 
@@ -57,3 +60,5 @@ If you need to compile this plugin with another Dremio version, you need to upda
 2. Take the resulting .jar file from the target folder and put it to the `$DREMIO_HOME/jars` folder in Dremio
 3. Download the [SingleStore JDBC driver](https://github.com/memsql/S2-JDBC-Connector/releases/download/v1.0.1/singlestore-jdbc-client-1.0.1.jar) and put in the `$DREMIO_HOME/jars/3rdparty` folder.
 4. Restart Dremio.
+
+Prebuilt plugin JARs are attached to [GitHub Releases](https://github.com/memsql/dremio-singlestore/releases). See [RELEASING.md](RELEASING.md) for how releases are published.
